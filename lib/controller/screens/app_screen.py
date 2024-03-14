@@ -2,6 +2,7 @@ import binascii
 
 from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QShortcut, QKeySequence
 from PyQt6.QtWidgets import QMainWindow, QBoxLayout, QPushButton, QHBoxLayout, QFormLayout, QLabel, QFileDialog, \
     QGraphicsOpacityEffect, QMessageBox
 
@@ -12,6 +13,8 @@ from lib.controller.util.helper import setlogger, applog
 from lib.controller.views.pages.home_screen import Ui_MainWindow
 
 from intelhex import IntelHex
+import numpy as np
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -28,6 +31,9 @@ class MainWindow(QMainWindow):
 
         setlogger()
         self.set_actions()
+
+        self.shortcut = QShortcut(QKeySequence("Ctrl+C"), self)
+        self.shortcut.activated.connect(self.close)
 
         # self.enable_port_settings(False)
         # self.update_ports()
@@ -79,9 +85,33 @@ class MainWindow(QMainWindow):
         pckt = self.pcan.Read(self.pcan_port)
         print("pckt from the controller")
         print(pckt)
-        # msg = pckt[1]
-        # print("msg from the controller")
-        # print(self.get_msg_template(msg))
+        print(pckt[0])
+        print("hex ", hex(pckt[0]))
+        print("STAtus ", TPCANStatus(pckt[0]))
+        msg = pckt[1]
+        print("msg from the controller")
+        print("ID", msg.ID)
+        print(np.ctypeslib.as_array(msg.DATA))
+        print("MSGTYPE", msg.MSGTYPE)
+
+        if(msg.MSGTYPE == PCAN_MESSAGE_STANDARD):
+            print("STANDARD TYPE")
+        print("LEN", msg.LEN)
+        # TPCANMsg
+        print("DATA")
+        print(msg.DATA)
+
+        print("**********************")
+        print(msg.DATA[0])
+        print(msg.DATA[1])
+        print(msg.DATA[2])
+        print(msg.DATA[3])
+        print(msg.DATA[4])
+        print(msg.DATA[5])
+        print(msg.DATA[6])
+        print(msg.DATA[7])
+
+
 
 
 
